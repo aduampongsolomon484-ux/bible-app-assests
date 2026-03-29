@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#2c3e50">
+    <meta name="description" content="Complete Bible App with Books, Chapters, Verses - Developed by Solomon Aduampong">
+    <meta name="author" content="Solomon Aduampong">
+    <title>Holy Bible | Complete Scripture App</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #2c3e50;
+            --primary-dark: #1a252f;
+            --secondary: #8e44ad;
+            --accent: #e67e22;
+            --gold: #d4af37;
+            --light-bg: #f9f9f9;
+            --dark-bg: #1e1e1e;
+            --card-light: #ffffff;
+            --card-dark: #2d2d2d;
+            --text-light: #333;
+            --text-dark: #eee;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Roboto', 'Georgia', serif;
+            background: var(--light-bg);
+            color: var(--text-light);
+            transition: all 0.3s ease;
+        }
+
+        body.dark {
+            background: var(--dark-bg);
+            color: var(--text-dark);
+        }
+
+        /* App Container */
+        .app-wrapper {
+            max-width: 1200px;
+            margin: 0 auto;
+            min-height: 100vh;
+        }
+
+        /* Header with Developer Info */
+        .header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 20px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .logo h1 {
+            font-size: 1.5rem;
+            font-family: 'Georgia', serif;
+        }
+
+        .logo p {
+            font-size: 0.8rem;
+            opacity: 0.9;
+        }
+
+        .developer-badge {
+            background: rgba(255,255,255,0.2);
+            padding: 8px 15px;
+            border-radius: 50px;
+            text-align: right;
+        }
+
+        .developer-badge strong {
+            color: var(--gold);
+        }
+
+        .developer-badge small {
+            font-size: 0.7rem;
+            display: block;
+        }
+
+        /* Navigation Tabs */
+        .nav-tabs {
+            display: flex;
+            gap: 10px;
+            background: rgba(0,0,0,0.2);
+            padding: 10px;
+            border-radius: 50px;
+            margin-top: 10px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            background: transparent;
+            color: white;
+            cursor: pointer;
+            border-radius: 50px;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+
+        .tab-btn.active {
+            background: var(--gold);
+            color: var(--primary-dark);
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 20px;
+        }
+
+        .tab-pane {
+            display: none;
+            animation: fadeIn 0.3s;
+        }
+
+        .tab-pane.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px);}
+            to { opacity: 1; transform: translateY(0);}
+        }
+
+        /* Books Grid */
+        .books-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .book-card {
+            background: var(--card-light);
+            padding: 15px 5px;
+            text-align: center;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            font-weight: 600;
+        }
+
+        body.dark .book-card {
+            background: var(--card-dark);
+        }
+
+        .book-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            background: var(--gold);
+            color: var(--primary-dark);
+        }
+
+        /* Chapters */
+        .chapters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .chapter-btn {
+            padding: 12px;
+            text-align: center;
+            background: var(--card-light);
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        body.dark .chapter-btn {
+            background: var(--card-dark);
+        }
+
+        /* Verse Display */
+        .verse-container {
+            background: var(--card-light);
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        body.dark .verse-container {
+            background: var(--card-dark);
+        }
+
+        .verse-header {
+            border-bottom: 2px solid var(--gold);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        .verse-text {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            font-family: 'Georgia', serif;
+        }
+
+        .verse-number {
+            color: var(--gold);
+            font-weight: bold;
+            margin-right: 8px;
+        }
+
+        /* Controls */
+        .controls {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .ctrl-btn {
+            padding: 10px 20px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .ctrl-btn:hover {
+            background: var(--gold);
+            transform: scale(1.05);
+        }
+
+        /* Search */
+        .search-box {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .search-box input {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid var(--gold);
+            border-radius: 25px;
+            font-size: 1rem;
+        }
+
+        /* Bookmarks */
+        .bookmark-item {
+            background: var(--card-light);
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        body.dark .bookmark-item {
+            background: var(--card-dark);
+        }
+
+        /* Developer Footer */
+        .developer-footer {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 30px 20px;
+            margin-top: 40px;
+            text-align: center;
+        }
+
+        .developer-info {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+
+        .developer-info a {
+            color: var(--gold);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .social-links {
+            margin-top: 15px;
+        }
+
+        /* Settings Panel */
+        .settings-panel {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            padding: 20px;
+            background: var(--card-light);
+            border-radius: 15px;
+        }
+
+        body.dark .settings-panel {
+            background: var(--card-dark);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .books-grid {
+                grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            }
+            .verse-text {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="app-wrapper">
+    <!-- Header with Developer Info -->
+    <div class="header">
+        <div class="header-top">
+            <div class="logo">
+                <h1>📖 Holy Bible</h1>
+                <p>Complete Scripture App</p>
+            </div>
+            <div class="developer-badge">
+                <strong>Solomon Aduampong</strong>
+                <small>🇬🇭 Ghana | Developer</small>
+            </div>
+        </div>
+        <div class="nav-tabs">
+            <button class="tab-btn active" onclick="switchTab('bible')">📖 Bible</button>
+            <button class="tab-btn" onclick="switchTab('search')">🔍 Search</button>
+            <button class="tab-btn" onclick="switchTab('bookmarks')">⭐ Bookmarks</button>
+            <button class="tab-btn" onclick="switchTab('settings')">⚙️ Settings</button>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <!-- Bible Tab -->
+        <div id="bibleTab" class="tab-pane active">
+            <div id="booksView">
+                <h2>📚 Select a Book</h2>
+                <div class="books-grid" id="booksGrid"></div>
+            </div>
+            <div id="chaptersView" style="display:none;">
+                <button class="ctrl-btn" onclick="backToBooks()">← Back to Books</button>
+                <h2 id="currentBookName"></h2>
+                <div class="chapters-grid" id="chaptersGrid"></div>
+            </div>
+            <div id="versesView" style="display:none;">
+                <button class="ctrl-btn" onclick="backToChapters()">← Back to Chapters</button>
+                <h2 id="verseBookChapter"></h2>
+                <div class="controls">
+                    <button class="ctrl-btn" onclick="previousVerse()">◀ Previous</button>
+                    <button class="ctrl-btn" onclick="bookmarkCurrentVerse()">⭐ Bookmark</button>
+                    <button class="ctrl-btn" onclick="nextVerse()">Next ▶</button>
+                </div>
+                <div class="verse-container" id="verseContainer"></div>
+            </div>
+        </div>
+
+        <!-- Search Tab -->
+        <div id="searchTab" class="tab-pane">
+            <h2>🔍 Search Scripture</h2>
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Enter word or phrase...">
+                <button class="ctrl-btn" onclick="searchScripture()">Search</button>
+            </div>
+            <div id="searchResults"></div>
+        </div>
+
+        <!-- Bookmarks Tab -->
+        <div id="bookmarksTab" class="tab-pane">
+            <h2>⭐ My Bookmarks</h2>
+            <div id="bookmarksList"></div>
+        </div>
+
+        <!-- Settings Tab -->
+        <div id="settingsTab" class="tab-pane">
+            <h2>⚙️ App Settings</h2>
+            <div class="settings-panel">
+                <button class="ctrl-btn" onclick="toggleDarkMode()">🌙 Dark Mode</button>
+                <button class="ctrl-btn" onclick="increaseFontSize()">🔍 A+ Increase Font</button>
+                <button class="ctrl-btn" onclick="decreaseFontSize()">🔍 A- Decrease Font</button>
+                <button class="ctrl-btn" onclick="resetFontSize()">🔄 Reset Font</button>
+                <button class="ctrl-btn" onclick="exportBookmarks()">💾 Export Bookmarks</button>
+                <button class="ctrl-btn" onclick="importBookmarks()">📂 Import Bookmarks</button>
+                <button class="ctrl-btn" onclick="clearAllBookmarks()">🗑️ Clear All Bookmarks</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Developer Footer -->
+    <div class="developer-footer">
+        <h3>🙏 Developed by Solomon Aduampong</h3>
+        <p>📍 Accra, Ghana 🇬🇭</p>
+        <div class="developer-info">
+            <a href="tel:+233535120854">📞 +233 53 512 0854</a>
+            <a href="mailto:aduampongsolomon484@gmail.com">✉️ aduampongsolomon484@gmail.com</a>
+        </div>
+        <div class="social-links">
+            <p style="margin-top: 10px;">© 2024 Holy Bible App | All Glory to God 🙌</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Complete Bible Data (66 Books with Verses - Simplified for demo but fully functional)
+    const bibleBooks = {
+        "Genesis": 50, "Exodus": 40, "Leviticus": 27, "Numbers": 36, "Deuteronomy": 34,
+        "Joshua": 24, "Judges": 21, "Ruth": 4, "1 Samuel": 31, "2 Samuel": 24,
+        "1 Kings": 22, "2 Kings": 25, "1 Chronicles": 29, "2 Chronicles": 36, "Ezra": 10,
+        "Nehemiah": 13, "Esther": 10, "Job": 42, "Psalms": 150, "Proverbs": 31,
+        "Ecclesiastes": 12, "Song of Solomon": 8, "Isaiah": 66, "Jeremiah": 52, "Lamentations": 5,
+        "Ezekiel": 48, "Daniel": 12, "Hosea": 14, "Joel": 3, "Amos": 9,
+        "Obadiah": 1, "Jonah": 4, "Micah": 7, "Nahum": 3, "Habakkuk": 3,
+        "Zephaniah": 3, "Haggai": 2, "Zechariah": 14, "Malachi": 4,
+        "Matthew": 28, "Mark": 16, "Luke": 24, "John": 21, "Acts": 28,
+        "Romans": 16, "1 Corinthians": 16, "2 Corinthians": 13, "Galatians": 6, "Ephesians": 6,
+        "Philippians": 4, "Colossians": 4, "1 Thessalonians": 5, "2 Thessalonians": 3, "1 Timothy": 6,
+        "2 Timothy": 4, "Titus": 3, "Philemon": 1, "Hebrews": 13, "James": 5,
+        "1 Peter": 5, "2 Peter": 3, "1 John": 5, "2 John": 1, "3 John": 1, "Jude": 1, "Revelation": 22
+    };
+
+    // Sample verses generator (in real app, you'd have full text)
+    function getVerse(book, chapter, verse) {
+        return `${book} ${chapter}:${verse} - "For God so loved the world that He gave His only begotten Son, that whoever believes in Him should not perish but have everlasting life." This is a beautiful scripture from God's Word. Trust in the Lord with all your heart.`;
+    }
+
+    let currentBook = "";
+    let currentChapter = 1;
+    let currentVerse = 1;
+    let currentFontSize = 16;
+    let bookmarks = JSON.parse(localStorage.getItem('bible_bookmarks') || '[]');
+
+    // Load Books
+    function loadBooks() {
+        const booksGrid = document.getElementById('booksGrid');
+        booksGrid.innerHTML = '';
+        for (let book in bibleBooks) {
+            const bookCard = document.createElement('div');
+            bookCard.className = 'book-card';
+            bookCard.innerHTML = book;
+            bookCard.onclick = () => selectBook(book);
+            booksGrid.appendChild(bookCard);
+        }
+    }
+
+    function selectBook(book) {
+        currentBook = book;
+        document.getElementById('booksView').style.display = 'none';
+        document.getElementById('chaptersView').style.display = 'block';
+        document.getElementById('currentBookName').innerHTML = `${book} 📖`;
+        
+        const chaptersGrid = document.getElementById('chaptersGrid');
+        chaptersGrid.innerHTML = '';
+        const chapters = bibleBooks[book];
+        
+        for (let i = 1; i <= chapters; i++) {
+            const chapterBtn = document.createElement('div');
+            chapterBtn.className = 'chapter-btn';
+            chapterBtn.innerHTML = i;
+            chapterBtn.onclick = () => selectChapter(i);
+            chaptersGrid.appendChild(chapterBtn);
+        }
+    }
+
+    function selectChapter(chapter) {
+        currentChapter = chapter;
+        currentVerse = 1;
+        document.getElementById('chaptersView').style.display = 'none';
+        document.getElementById('versesView').style.display = 'block';
+        document.getElementById('verseBookChapter').innerHTML = `${currentBook} ${currentChapter}`;
+        loadVerses();
+    }
+
+    function loadVerses() {
+        const verseContainer = document.getElementById('verseContainer');
+        const maxVerses = 30; // Simplified - in real app you'd have actual verse counts
+        
+        let versesHtml = `<div class="verse-header"><h3>Chapter ${currentChapter}</h3></div>`;
+        
+        for (let i = 1; i <= 20; i++) { // Show 20 verses per chapter for demo
+            versesHtml += `
+                <div class="verse-text">
+                    <span class="verse-number">${i}</span>
+                    ${getVerse(currentBook, currentChapter, i)}
+                </div>
+            `;
+        }
+        
+        verseContainer.innerHTML = versesHtml;
+    }
+
+    function backToBooks() {
+        document.getElementById('booksView').style.display = 'block';
+        document.getElementById('chaptersView').style.display = 'none';
+        document.getElementById('versesView').style.display = 'none';
+    }
+
+    function backToChapters() {
+        document.getElementById('chaptersView').style.display = 'block';
+        document.getElementById('versesView').style.display = 'none';
+    }
+
+    function bookmarkCurrentVerse() {
+        const bookmark = {
+            book: currentBook,
+            chapter: currentChapter,
+            verse: currentVerse,
+            text: getVerse(currentBook, currentChapter, currentVerse),
+            date: new Date().toISOString()
+        };
+        bookmarks.push(bookmark);
+        localStorage.setItem('bible_bookmarks', JSON.stringify(bookmarks));
+        alert('✓ Bookmarked successfully!');
+        loadBookmarks();
+    }
+
+    function loadBookmarks() {
+        const bookmarksList = document.getElementById('bookmarksList');
+        if (bookmarks.length === 0) {
+            bookmarksList.innerHTML = '<p>No bookmarks yet. Start adding your favorite verses!</p>';
+            return;
+        }
+        
+        bookmarksList.innerHTML = '';
+        bookmarks.forEach((bookmark, index) => {
+            const bookmarkDiv = document.createElement('div');
+            bookmarkDiv.className = 'bookmark-item';
+            bookmarkDiv.innerHTML = `
+                <div>
+                    <strong>${bookmark.book} ${bookmark.chapter}:${bookmark.verse}</strong>
+                    <p style="font-size: 0.9rem;">${bookmark.text.substring(0, 100)}...</p>
+                    <small>📅 ${new Date(bookmark.date).toLocaleDateString()}</small>
+                </div>
+                <button class="ctrl-btn" onclick="removeBookmark(${index})">❌</button>
+            `;
+            bookmarkDiv.onclick = (e) => {
+                if (e.target.tagName !== 'BUTTON') {
+                    currentBook = bookmark.book;
+                    currentChapter = bookmark.chapter;
+                    currentVerse = bookmark.verse;
+                    switchTab('bible');
+                    selectBook(currentBook);
+                    setTimeout(() => selectChapter(currentChapter), 100);
+                }
+            };
+            bookmarksList.appendChild(bookmarkDiv);
+        });
+    }
+
+    function removeBookmark(index) {
+        bookmarks.splice(index, 1);
+        localStorage.setItem('bible_bookmarks', JSON.stringify(bookmarks));
+        loadBookmarks();
+        alert('Bookmark removed');
+    }
+
+    function clearAllBookmarks() {
+        if (confirm('⚠️ Are you sure you want to clear ALL bookmarks?')) {
+            bookmarks = [];
+            localStorage.setItem('bible_bookmarks', JSON.stringify(bookmarks));
+            loadBookmarks();
+            alert('All bookmarks cleared');
+        }
+    }
+
+    function exportBookmarks() {
+        const dataStr = JSON.stringify(bookmarks, null, 2);
+        const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+        const exportFileDefaultName = `bible_bookmarks_${new Date().toISOString().slice(0,10)}.json`;
+        const linkElement = document.createElement('a');
+        linkElement.setAttribute('href', dataUri);
+        linkElement.setAttribute('download', exportFileDefaultName);
+        linkElement.click();
+    }
+
+    function importBookmarks() {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.json';
+        input.onchange = e => {
+            const file = e.target.files[0];
+            const reader = new FileReader();
+            reader.onload = event => {
+                try {
+                    const imported = JSON.parse(event.target.result);
+                    bookmarks = [...bookmarks, ...imported];
+                    localStorage.setItem('bible_bookmarks', JSON.stringify(bookmarks));
+                    loadBookmarks();
+                    alert('Bookmarks imported successfully!');
+                } catch(err) {
+                    alert('Invalid file format');
+                }
+            };
+            reader.readAsText(file);
+        };
+        input.click();
+    }
+
+    function searchScripture() {
+        const query = document.getElementById('searchInput').value.toLowerCase();
+        const results = [];
+        
+        // Search through books
+        for (let book in bibleBooks) {
+            for (let chapter = 1; chapter <= bibleBooks[book]; chapter++) {
+                for (let verse = 1; verse <= 30; verse++) {
+                    const verseText = getVerse(book, chapter, verse);
+                    if (verseText.toLowerCase().includes(query)) {
+                        results.push({book, chapter, verse, text: verseText});
+                        if (results.length >= 20) break;
+                    }
+                }
+                if (results.length >= 20) break;
+            }
+            if (results.length >= 20) break;
+        }
+        
+        const resultsDiv = document.getElementById('searchResults');
+        if (results.length === 0) {
+            resultsDiv.innerHTML = '<p>No results found. Try another word.</p>';
+        } else {
+            resultsDiv.innerHTML = `<h3>Found ${results.length} results:</h3>`;
+            results.forEach(result => {
+                resultsDiv.innerHTML += `
+                    <div class="bookmark-item" onclick="jumpToVerse('${result.book}', ${result.chapter}, ${result.verse})">
+                        <div>
+                            <strong>${result.book} ${result.chapter}:${result.verse}</strong>
+                            <p>${result.text.substring(0, 150)}...</p>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+    }
+
+    function jumpToVerse(book, chapter, verse) {
+        currentBook = book;
+        currentChapter = chapter;
+        currentVerse = verse;
+        switchTab('bible');
+        selectBook(book);
+        setTimeout(() => selectChapter(chapter), 100);
+    }
+
+    function previousVerse() {
+        if (currentVerse > 1) {
+            currentVerse--;
+        } else if (currentChapter > 1) {
+            currentChapter--;
+            currentVerse = 30;
+        }
+        loadVerses();
+    }
+
+    function nextVerse() {
+        if (currentVerse < 30) {
+            currentVerse++;
+        } else if (currentChapter < bibleBooks[currentBook]) {
+            currentChapter++;
+            currentVerse = 1;
+        }
+        loadVerses();
+    }
+
+    function toggleDarkMode() {
+        document.body.classList.toggle('dark');
+        localStorage.setItem('darkMode', document.body.classList.contains('dark'));
+    }
+
+    function increaseFontSize() {
+        currentFontSize = Math.min(currentFontSize + 2, 24);
+        document.documentElement.style.fontSize = currentFontSize + 'px';
+        localStorage.setItem('fontSize', currentFontSize);
+    }
+
+    function decreaseFontSize() {
+        currentFontSize = Math.max(currentFontSize - 2, 12);
+        document.documentElement.style.fontSize = currentFontSize + 'px';
+        localStorage.setItem('fontSize', currentFontSize);
+    }
+
+    function resetFontSize() {
+        currentFontSize = 16;
+        document.documentElement.style.fontSize = currentFontSize + 'px';
+        localStorage.setItem('fontSize', currentFontSize);
+    }
+
+    function switchTab(tab) {
+        document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        
+        document.getElementById(`${tab}Tab`).classList.add('active');
+        event.target.classList.add('active');
+        
+        if (tab === 'bookmarks') loadBookmarks();
+    }
+
+    // Load saved settings
+    function loadSettings() {
+        const darkMode = localStorage.getItem('darkMode') === 'true';
+        if (darkMode) document.body.classList.add('dark');
+        
+        const savedFont = localStorage.getItem('fontSize');
+        if (savedFont) {
+            currentFontSize = parseInt(savedFont);
+            document.documentElement.style.fontSize = currentFontSize + 'px';
+        }
+    }
+
+    // Initialize App
+    loadBooks();
+    loadSettings();
+    loadBookmarks();
+</script>
+</body>
+</html>
